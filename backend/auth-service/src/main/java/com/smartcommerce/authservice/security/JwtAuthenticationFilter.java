@@ -2,7 +2,7 @@ package com.smartcommerce.authservice.security;
 
 import java.io.IOException;
 import java.util.Collections;
-
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -55,14 +55,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 		 if (jwtService.isTokenValid(token, user.getEmail())) {
 
-		     UsernamePasswordAuthenticationToken authentication =
-		             new UsernamePasswordAuthenticationToken(
-		                     user.getEmail(),
-		                     null,
-		                     Collections.emptyList()
-		             );
+			    UsernamePasswordAuthenticationToken authentication =
+			            new UsernamePasswordAuthenticationToken(
+			                    user.getEmail(),
+			                    null,
+			                    Collections.emptyList()
+			            );
+			    
+			    authentication.setDetails(
+			            new WebAuthenticationDetailsSource().buildDetails(request)
+			    );
 
-		     SecurityContextHolder.getContext().setAuthentication(authentication);
+			    SecurityContextHolder.getContext().setAuthentication(authentication);
 		 }
 
 	        filterChain.doFilter(request, response);
