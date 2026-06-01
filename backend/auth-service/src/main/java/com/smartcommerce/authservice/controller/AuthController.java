@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartcommerce.authservice.dto.LoginRequest;
 import com.smartcommerce.authservice.dto.RegisterRequest;
 import com.smartcommerce.authservice.service.AuthService;
 
@@ -23,6 +24,11 @@ public class AuthController {
 	@PostMapping("/register")
 	public String register(@Valid @RequestBody RegisterRequest request) {
 		return authService.register(request);
+	}
+	
+	@PostMapping("/login")
+	public String login(@Valid @RequestBody LoginRequest request) {
+	    return authService.login(request);
 	}
 	
 }
