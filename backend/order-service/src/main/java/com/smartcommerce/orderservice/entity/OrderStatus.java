@@ -3,7 +3,9 @@ package com.smartcommerce.orderservice.entity;
 public enum OrderStatus {
 	
 	PLACED,
-	CANCELLED,
-	DELIVERED
+	PROCESSING,
+	SHIPPED,
+	DELIVERED,
+	CANCELLED
 
 }

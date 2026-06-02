@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smartcommerce.productservice.dto.ProductRequest;
@@ -50,6 +51,12 @@ public class ProductController {
 	@DeleteMapping("/{id}")
 	public String deleteProduct(@PathVariable Long id) {
 	    return productService.deleteProduct(id);
+	}
+	
+	@PutMapping("/{id}/reduce-stock")
+	public String reduceStock(@PathVariable Long id,
+	                          @RequestParam Integer quantity) {
+	    return productService.reduceStock(id, quantity);
 	}
 
 }

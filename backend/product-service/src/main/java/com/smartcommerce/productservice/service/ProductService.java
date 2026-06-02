@@ -74,4 +74,21 @@ public class ProductService {
 
 	    return "Product deleted successfully";
 	}
+	
+	public String reduceStock(Long productId, Integer quantity) {
+
+	    Product product = productRepository.findById(productId)
+	            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+	    if (product.getStockQuantity() < quantity) {
+	        throw new RuntimeException("Insufficient stock");
+	    }
+
+	    product.setStockQuantity(product.getStockQuantity() - quantity);
+	    product.setUpdatedAt(LocalDateTime.now());
+
+	    productRepository.save(product);
+
+	    return "Stock updated successfully";
+	}
 }

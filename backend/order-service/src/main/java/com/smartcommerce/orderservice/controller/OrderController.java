@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smartcommerce.orderservice.dto.OrderRequest;
 import com.smartcommerce.orderservice.entity.Order;
+import com.smartcommerce.orderservice.entity.OrderStatus;
 import com.smartcommerce.orderservice.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -38,6 +41,14 @@ public class OrderController {
     @GetMapping("/{id}")
     public Order getOrderById(@PathVariable Long id) {
         return orderService.getOrderById(id);
+    }
+    
+    @PutMapping("/{id}/status")
+    public String updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam OrderStatus status) {
+
+        return orderService.updateOrderStatus(id, status);
     }
 
 }
