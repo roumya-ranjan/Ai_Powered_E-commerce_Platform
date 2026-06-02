@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.smartcommerce.orderservice.dto.OrderRequest;
+import com.smartcommerce.orderservice.dto.ProductResponse;
 import com.smartcommerce.orderservice.entity.Order;
 import com.smartcommerce.orderservice.entity.OrderStatus;
 import com.smartcommerce.orderservice.repository.OrderRepository;
@@ -17,8 +19,11 @@ public class OrderService {
 	
 	public final OrderRepository orderRepository;
 	
-	public OrderService(OrderRepository orderrepository) {
+	private final RestTemplate restTemplate;
+	
+	public OrderService(OrderRepository orderrepository, RestTemplate restTemplate) {
 		this.orderRepository = orderrepository;
+		this.restTemplate = restTemplate;
 	}
 	
 	public String placeOrder(OrderRequest request) {
@@ -29,8 +34,16 @@ public class OrderService {
 	    order.setProductId(request.getProductId());
 	    order.setQuantity(request.getQuantity());
 
-	    BigDecimal dummyProductPrice = new BigDecimal("1000");
-	    BigDecimal totalAmount = dummyProductPrice.multiply(
+	    ProductResponse productResponse = restTemplate.getForObject(
+	            "http://PRODUCT-SERVICE/api/products/" + request.getProductId(),
+	            ProductResponse.class
+	    );
+
+	    if (productResponse == null) {
+	        throw new RuntimeException("Product not found");
+	    }
+
+	    BigDecimal totalAmount = productResponse.getPrice().multiply(
 	            BigDecimal.valueOf(request.getQuantity())
 	    );
 
