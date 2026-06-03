@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.smartcommerce.paymentservice.dto.PaymentRequest;
 import com.smartcommerce.paymentservice.entity.Payment;
 import com.smartcommerce.paymentservice.entity.PaymentStatus;
+import com.smartcommerce.paymentservice.kafka.PaymentProducer;
 import com.smartcommerce.paymentservice.repository.PaymentRepository;
 
 @Service
@@ -18,20 +19,20 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	
 	private final RestTemplate restTemplate;
+	
+	private final PaymentProducer paymentProducer;
 
-	public PaymentService(PaymentRepository paymentRepository, RestTemplate restTemplate) {
+	public PaymentService(PaymentRepository paymentRepository,
+							RestTemplate restTemplate, 
+							PaymentProducer paymentProducer) {
 		this.paymentRepository = paymentRepository;
 		this.restTemplate =restTemplate;
+		this.paymentProducer =paymentProducer;
 	}
 	
 	public String createPayment(PaymentRequest request) {
 
-	    restTemplate.put(
-	            "http://ORDER-SERVICE/api/orders/"
-	            + request.getOrderId()
-	            + "/status?status=PROCESSING",
-	            null
-	    );
+		paymentProducer.publishPaymentSuccess(request.getOrderId());
 
 	    Payment payment = new Payment();
 
