@@ -60,7 +60,14 @@ services:
       - "8082:8082"
     depends_on:
       - mysql
+      - redis
       - service-registry
+
+  redis:
+    image: redis:7
+    container_name: smart-commerce-redis
+    ports:
+      - "6379:6379"
 
   order-service:
     build: ./backend/order-service

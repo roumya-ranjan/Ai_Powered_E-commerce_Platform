@@ -3,11 +3,15 @@ package com.smartcommerce.productservice.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.smartcommerce.productservice.dto.ProductRequest;
 import com.smartcommerce.productservice.entity.Product;
 import com.smartcommerce.productservice.repository.ProductRepository;
+
+
 
 @Service
 public class ProductService {
@@ -41,13 +45,18 @@ public class ProductService {
 	    return productRepository.findAll();
 	}	
 	
+	@Cacheable(value = "products", key ="#id")
 	public Product getProductById(Long id) {
+		
+		System.out.println("Fetching product from MySQL....");
+		
 	    return productRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Product not found"));
 	}
 	
+	@CacheEvict(value = "products", key = "#id")
 	public String updateProduct(Long id, ProductRequest request) {
-
+		
 	    Product product = productRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -64,6 +73,7 @@ public class ProductService {
 	    return "Product updated successfully";
 	}
 	
+	@CacheEvict(value = "products", key = "#id")
 	public String deleteProduct(Long id) {
 
 	    if (!productRepository.existsById(id)) {
