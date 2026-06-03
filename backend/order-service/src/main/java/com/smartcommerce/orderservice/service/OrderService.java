@@ -13,6 +13,8 @@ import com.smartcommerce.orderservice.entity.Order;
 import com.smartcommerce.orderservice.entity.OrderStatus;
 import com.smartcommerce.orderservice.repository.OrderRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @Service
 public class OrderService {
 
@@ -26,6 +28,7 @@ public class OrderService {
 		this.restTemplate = restTemplate;
 	}
 	
+	@CircuitBreaker(name = "productServiceCB", fallbackMethod = "productServiceFallback")
 	public String placeOrder(OrderRequest request) {
 
 	    Order order = new Order();
@@ -87,5 +90,9 @@ public class OrderService {
 	    orderRepository.save(order);
 
 	    return "Order status updated successfully";
+	}
+	
+	public String productServiceFallback(OrderRequest request, Exception ex) {
+	    return "Product Service is currently unavailable. Please try again later.";
 	}
 }
