@@ -46,6 +46,13 @@ function Products() {
                                 >
                                     View
                                 </Link>
+                                
+                                <Link
+                                    className="btn btn-warning btn-sm ms-2"
+                                     to={`/products/update/${product.id}`}
+                                 >
+                                     Edit
+                                 </Link>
                             </td>
                         </tr>
                     ))}

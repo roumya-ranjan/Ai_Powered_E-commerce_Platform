@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import AddProduct from "./pages/AddProduct";
+import UpdateProduct from "./pages/UpdateProduct";
 import Orders from "./pages/Orders";
 import PlaceOrder from "./pages/PlaceOrder";
 import Payments from "./pages/Payments";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/add" element={<AddProduct />} />
+        <Route path="/products/update/:id" element={<UpdateProduct />} />
          <Route path="/orders" element={<Orders />} />
          <Route path="/orders/add" element={<PlaceOrder />} />
         <Route path="/payments" element={<Payments />} />
