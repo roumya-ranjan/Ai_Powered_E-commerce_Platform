@@ -7,6 +7,7 @@ import AddProduct from "./pages/AddProduct";
 import Orders from "./pages/Orders";
 import PlaceOrder from "./pages/PlaceOrder";
 import Payments from "./pages/Payments";
+import MakePayment from "./pages/MakePayment";
 import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 
@@ -22,6 +23,7 @@ function App() {
          <Route path="/orders" element={<Orders />} />
          <Route path="/orders/add" element={<PlaceOrder />} />
         <Route path="/payments" element={<Payments />} />
+        <Route path="/payments/add" element={<MakePayment />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/login" element={<Login />} />
       </Routes>
