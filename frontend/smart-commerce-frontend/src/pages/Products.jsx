@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 
 function Products() {
@@ -26,8 +27,10 @@ function Products() {
                         <th>Price</th>
                         <th>Stock</th>
                         <th>Category</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {products.map((product) => (
                         <tr key={product.id}>
@@ -36,6 +39,14 @@ function Products() {
                             <td>₹{product.price}</td>
                             <td>{product.stockQuantity}</td>
                             <td>{product.category}</td>
+                            <td>
+                                <Link
+                                    className="btn btn-primary btn-sm"
+                                    to={`/products/${product.id}`}
+                                >
+                                    View
+                                </Link>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
