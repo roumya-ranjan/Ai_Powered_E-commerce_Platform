@@ -15,6 +15,31 @@ function Products() {
             });
     }, []);
 
+    const deleteProduct = (id) => {
+
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this product?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        api.delete(`/api/products/${id}`)
+            .then((response) => {
+
+                alert(response.data);
+
+                setProducts(
+                    products.filter(product => product.id !== id)
+                );
+            })
+            .catch((error) => {
+                console.error("Error deleting product:", error);
+                alert("Failed to delete product");
+            });
+    };
+
     return (
         <div className="container mt-4">
             <h2>Products</h2>
@@ -46,13 +71,19 @@ function Products() {
                                 >
                                     View
                                 </Link>
-                                
+
                                 <Link
                                     className="btn btn-warning btn-sm ms-2"
                                      to={`/products/update/${product.id}`}
                                  >
                                      Edit
                                  </Link>
+                                 <button
+                                        className="btn btn-danger btn-sm ms-2"
+                                        onClick={()=>deleteProduct(product.id)}
+                                 >
+                                        Delete
+                                 </button>
                             </td>
                         </tr>
                     ))}
