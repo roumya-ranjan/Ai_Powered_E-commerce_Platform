@@ -11,6 +11,7 @@ function Navbar() {
                 </Link>
 
                 <div className="navbar-nav">
+                    <Link className="nav-link" to="/">Home</Link>
                     <Link className="nav-link" to="/products">Products</Link>
                     <Link className="nav-link" to="/products/add">Add Product</Link>
                     <Link className="nav-link" to="/orders">Orders</Link>
@@ -39,7 +40,7 @@ function Navbar() {
                     )}
                 </div>
             </div>
-        </nav>
+        </nav>  
     );
 }
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartcommerce.authservice.dto.AuthResponse;
 import com.smartcommerce.authservice.dto.LoginRequest;
 import com.smartcommerce.authservice.dto.RegisterRequest;
 import com.smartcommerce.authservice.service.AuthService;
@@ -22,6 +23,11 @@ public class AuthController {
 	        this.authService = authService;
 	    }
 	  
+	  @GetMapping("/test")
+	  public String test() {
+	      return "Auth Service Working";
+	  }
+	  
 	  @GetMapping("/profile")
 	  public String profile() {
 	      return "This is a protected profile API";
@@ -33,7 +39,8 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public String login(@Valid @RequestBody LoginRequest request) {
+	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+
 	    return authService.login(request);
 	}
 	

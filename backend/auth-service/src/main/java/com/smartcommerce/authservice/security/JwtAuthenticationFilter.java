@@ -1,10 +1,12 @@
 package com.smartcommerce.authservice.security;
 
 import java.io.IOException;
-import java.util.Collections;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import java.util.List;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,6 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	            FilterChain filterChain
 	    ) throws ServletException, IOException {
 		 
+		 	String path = request.getServletPath();
+		 	
+		 	if (path.startsWith("/api/auth/") ||
+		            path.startsWith("/swagger-ui") ||
+		            path.startsWith("/v3/api-docs")) {
+
+		        filterChain.doFilter(request, response);
+		        return;
+		 	}
+		 
 		 final String authHeader = request.getHeader("Authorization");
 
 		 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -43,6 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 		 String token = authHeader.substring(7);
 		 String email = jwtService.extractEmail(token);
+		  String role = jwtService.extractRole(token); 
 		 
 		 var userOptional = userRepository.findByEmail(email);
 
@@ -59,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			            new UsernamePasswordAuthenticationToken(
 			                    user.getEmail(),
 			                    null,
-			                    Collections.emptyList()
+			                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
 			            );
 			    
 			    authentication.setDetails(

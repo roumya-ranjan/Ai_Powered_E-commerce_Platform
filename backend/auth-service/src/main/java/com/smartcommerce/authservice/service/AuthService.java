@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.smartcommerce.authservice.dto.AuthResponse;
 import com.smartcommerce.authservice.dto.LoginRequest;
 import com.smartcommerce.authservice.dto.RegisterRequest;
 import com.smartcommerce.authservice.entity.Role;
@@ -41,20 +42,21 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.CUSTOMER);
-
+        user.setRole(Role.USER);
+        
+        System.out.println("Saving role = " + user.getRole());	
         userRepository.save(user);
 
         return "User registered successfully";
     }
     
-    public String login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
 
         Optional<User> optionalUser =
                 userRepository.findByEmail(request.getEmail());
 
         if (optionalUser.isEmpty()) {
-            return "Invalid Email";
+        	 throw new RuntimeException("Invalid Email");
         }
 
         User user = optionalUser.get();
@@ -65,11 +67,14 @@ public class AuthService {
                         user.getPassword());
 
         if (!matches) {
-            return "Invalid Password";
+        	 throw new RuntimeException("Invalid Password");
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        return token;
+        return new AuthResponse(
+                token,
+                user.getRole().name()
+        );
     }
 }

@@ -3,62 +3,84 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const [loginData, setLoginData] = useState({
-        email: "",
-        password: ""
-    });
-
-    const handleChange = (e) => {
-        setLoginData({
-            ...loginData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
+        setError("");
 
-        api.post("/api/auth/login", loginData)
-            .then((response) => {
-                localStorage.setItem("token", response.data);
-                alert("Login successful");
-                navigate("/products");
+        api.post("/api/auth/login", { email, password })
+            .then((res) => {
+                const {token, role } = res.data;
+                localStorage.setItem("token", token);
+
+                if (role === "ADMIN"){
+                    navigate("/admin/dashboard");
+                }else{
+                navigate("/");
+                }
             })
-            .catch((error) => {
-                console.error("Login failed:", error);
-                alert("Invalid email or password");
-            });
+            .catch(() => setError("Invalid email or password"));
     };
 
     return (
-        <div className="container mt-4">
-            <h2>Login</h2>
+        <div style={{ minHeight: "100vh", background: "#f1f3f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ background: "#fff", padding: 32, borderRadius: 4, width: 360, border: "0.5px solid #e0e0e0" }}>
+                <h4 style={{ marginBottom: 4, fontWeight: 600 }}>Login</h4>
+                <p style={{ fontSize: 13, color: "#878787", marginBottom: 24 }}>Welcome back to Smart Commerce</p>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    className="form-control mb-2"
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    onChange={handleChange}
-                    required
-                />
+                {error && (
+                    <div style={{ background: "#fdecea", color: "#e53935", fontSize: 13, padding: "10px 12px", borderRadius: 2, marginBottom: 16 }}>
+                        {error}
+                    </div>
+                )}
 
-                <input
-                    className="form-control mb-2"
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleChange}
-                    required
-                />
+                <form onSubmit={handleLogin}>
+                    <div style={{ marginBottom: 16 }}>
+                        <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder="Enter your email"
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid #e0e0e0", borderRadius: 2, fontSize: 14, outline: "none" }}
+                        />
+                    </div>
 
-                <button className="btn btn-primary" type="submit">
-                    Login
-                </button>
-            </form>
+                    <div style={{ marginBottom: 24 }}>
+                        <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="Enter your password"
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid #e0e0e0", borderRadius: 2, fontSize: 14, outline: "none" }}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        style={{ width: "100%", background: "#2874f0", color: "#fff", border: "none", padding: "12px 0", borderRadius: 2, fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+                    >
+                        Login
+                    </button>
+                </form>
+
+                <p style={{ textAlign: "center", fontSize: 13, marginTop: 20, color: "#878787" }}>
+                    Don't have an account?{" "}
+                    <span
+                        onClick={() => navigate("/register")}
+                        style={{ color: "#2874f0", cursor: "pointer", fontWeight: 500 }}
+                    >
+                        Register
+                    </span>
+                </p>
+            </div>
         </div>
     );
 }
