@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import { isAdmin, logout } from "../../utils/auth";
+import {isAdmin, logout } from "../../utils/auth";
 
 function AdminDashboard() {
     const navigate = useNavigate();
     const [stats, setStats] = useState({ products: 0, orders: 0, payments: 0, users: 0 });
+    const handleLogout = () =>{
+         localStorage.removeItem("token");
+         localStorage.removeItem("cart");
+         navigate("/login");
+    };
 
     useEffect(() => {
         if (!isAdmin()) return navigate("/login");
@@ -45,7 +50,7 @@ function AdminDashboard() {
                         View Store
                     </button>
                     <button
-                        onClick={logout}
+                        onClick={handlelogout}
                         style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}
                     >
                         Logout

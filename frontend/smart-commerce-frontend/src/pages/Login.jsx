@@ -14,7 +14,13 @@ function Login() {
 
         api.post("/api/auth/login", { email, password })
             .then((res) => {
-                const {token, role } = res.data;
+                const token = res.data.token;
+                const role = res.data.role;
+                if (!token){
+                    setError("Invalid email or password");
+                    return;
+                }
+                
                 localStorage.setItem("token", token);
 
                 if (role === "ADMIN"){

@@ -22,5 +22,5 @@ export function isLoggedIn() {
 
 export function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    localStorage.removeItem("cart");
 }

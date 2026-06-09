@@ -7,6 +7,11 @@ function AdminOrders() {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("cart");
+    navigate("/login");
+};
 
     useEffect(() => {
         if (!isAdmin()) return navigate("/login");
@@ -41,7 +46,7 @@ function AdminOrders() {
                     </span>
                     <span style={{ color: "#fff", fontWeight: 600, fontSize: 18 }}>Manage Orders</span>
                 </div>
-                <button onClick={logout} style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                <button onClick={handlelogout} style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
                     Logout
                 </button>
             </div>

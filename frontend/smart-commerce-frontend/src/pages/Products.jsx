@@ -69,7 +69,15 @@ function Products() {
                                         >
                                             Delete
                                         </button>
-                                    </>
+                                        <button
+                                            onClick={() => addToCart(product)}
+                                            style={{ flex: 1, background: "#fff", border: "1px solid #2874f0", 
+                                            color: "#2874f0", fontSize: 12, fontWeight: 600, 
+                                            padding: "6px 0", borderRadius: 2, cursor: "pointer" }}
+                                        >
+                                            Add to Cart
+                                        </button>
+                                  </>
                                 )}
                             </td>
                         </tr>

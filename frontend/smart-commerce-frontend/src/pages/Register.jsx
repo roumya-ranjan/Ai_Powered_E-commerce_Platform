@@ -17,13 +17,30 @@ function Register() {
         setError("");
         setLoading(true);
 
-        api.post("/api/auth/register", user)
-            .then((res) => {
-                alert(res.data);
+    api.post("/api/auth/register", user)
+        .then((res) => {
+            console.log("Register response:", res.data);
+            
+            if (res.data === "Email already registered") {
+                setError("Email already registered");
+            } else {
+                alert("Registration successful! Please login.");
                 navigate("/login");
-            })
-            .catch(() => setError("Registration failed. Email may already be registered."))
-            .finally(() => setLoading(false));
+            }
+        })
+        .catch((err) => {
+            console.log("Register error:", err);
+            console.log("Error response:", err.response?.data);
+            console.log("Error status:", err.response?.status);
+            
+            const msg = err.response?.data;
+            if (typeof msg === "string") {
+                setError(msg);
+            } else {
+                setError("Registration failed. Please try again.");
+            }
+        })
+        .finally(() => setLoading(false));
     };
 
     return (

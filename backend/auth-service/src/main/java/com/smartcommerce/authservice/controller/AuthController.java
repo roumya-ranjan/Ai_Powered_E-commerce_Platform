@@ -1,5 +1,6 @@
 package com.smartcommerce.authservice.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,25 +24,29 @@ public class AuthController {
 	        this.authService = authService;
 	    }
 	  
-	  @GetMapping("/test")
-	  public String test() {
-	      return "Auth Service Working";
-	  }
-	  
 	  @GetMapping("/profile")
 	  public String profile() {
 	      return "This is a protected profile API";
 	  }
 	
-	@PostMapping("/register")
-	public String register(@Valid @RequestBody RegisterRequest request) {
-		return authService.register(request);
-	}
+	    @PostMapping("/register")
+	    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+	        try {
+	            String result = authService.register(request);
+	            return ResponseEntity.ok(result);
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body(e.getMessage());
+	        }
+	    }
 	
-	@PostMapping("/login")
-	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-
-	    return authService.login(request);
-	}
+	    @PostMapping("/login")
+	    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+	        try {
+	            AuthResponse response = authService.login(request);
+	            return ResponseEntity.ok(response);
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body(null);
+	        }
+	    }
 	
 }

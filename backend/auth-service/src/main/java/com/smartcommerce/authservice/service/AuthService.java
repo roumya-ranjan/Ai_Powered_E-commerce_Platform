@@ -34,7 +34,7 @@ public class AuthService {
     public String register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            return "Email already registered";
+            throw new RuntimeException( "Email already registered");
         }
 
         User user = new User();
@@ -43,8 +43,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
-        
-        System.out.println("Saving role = " + user.getRole());	
+        	
         userRepository.save(user);
 
         return "User registered successfully";
