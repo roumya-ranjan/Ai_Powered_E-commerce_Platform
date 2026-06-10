@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +14,17 @@ import com.smartcommerce.paymentservice.entity.PaymentStatus;
 import com.smartcommerce.paymentservice.kafka.PaymentProducer;
 import com.smartcommerce.paymentservice.repository.PaymentRepository;
 
+import java.math.BigDecimal;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.razorpay.RazorpayClient;
+import com.razorpay.Utils;
+
+import com.smartcommerce.paymentservice.dto.RazorpayOrderRequest;
+import com.smartcommerce.paymentservice.dto.RazorpayVerifyRequest;
+
 @Service
 public class PaymentService {
 
@@ -21,6 +33,12 @@ public class PaymentService {
 	private final RestTemplate restTemplate;
 	
 	private final PaymentProducer paymentProducer;
+	
+	@Value("${razorpay.key.id}")
+	private String razorpayKeyId;
+
+	@Value("${razorpay.key.secret}")
+	private String razorpayKeySecret;
 
 	public PaymentService(PaymentRepository paymentRepository,
 							RestTemplate restTemplate, 
@@ -55,5 +73,36 @@ public class PaymentService {
 	public Payment getPaymentById(Long id) {
 	    return paymentRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Payment not found"));
+	}
+	
+	public String createRazorpayOrder(RazorpayOrderRequest request) {
+
+	    try {
+
+	        RazorpayClient razorpayClient =
+	                new RazorpayClient(razorpayKeyId, razorpayKeySecret);
+
+	        int amountInPaise =
+	                request.getAmount()
+	                       .multiply(BigDecimal.valueOf(100))
+	                       .intValue();
+
+	        JSONObject orderRequest = new JSONObject();
+
+	        orderRequest.put("amount", amountInPaise);
+	        orderRequest.put("currency", "INR");
+	        orderRequest.put("receipt",
+	                "order_" + request.getOrderId());
+
+	        com.razorpay.Order razorpayOrder =
+	                razorpayClient.orders.create(orderRequest);
+
+	        return razorpayOrder.toString();
+
+	    } catch (Exception e) {
+	        throw new RuntimeException(
+	                "Failed to create Razorpay order : "
+	                        + e.getMessage());
+	    }
 	}
 }

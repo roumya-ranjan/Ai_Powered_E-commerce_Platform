@@ -1,23 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { getTokenPayload } from "../utils/auth";
+import { getUserId } from "../utils/auth";
 
 function Payment() {
     const navigate = useNavigate();
 
-    const [product] = useState(() => JSON.parse(sessionStorage.getItem("buyProduct") || "null"));
-    const [quantity] = useState(() => Number(sessionStorage.getItem("buyQuantity")) || 1);
-    const [address] = useState(() => JSON.parse(sessionStorage.getItem("deliveryAddress") || "null"));
+    const [product] = useState(() => 
+        JSON.parse(sessionStorage.getItem("buyProduct") || "null")
+    );
+
+    const [quantity] = useState(() => 
+        Number(sessionStorage.getItem("buyQuantity")) || 1
+    );
+
+    const [address] = useState(() =>
+        JSON.parse(sessionStorage.getItem("deliveryAddress") || "null")
+    );
 
     const [paymentMethod, setPaymentMethod] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+useEffect(() => {
     if (!product || !address) {
         navigate("/");
-        return null;
     }
+}, [product, address, navigate]);
+
+if (!product || !address) {
+    return (
+        <div style={{ padding: 30 }}>
+            <h3>Payment data missing</h3>
+        </div>
+    );
+}
 
     const totalAmount = product.price * quantity;
 
@@ -30,25 +48,37 @@ function Payment() {
         setError("");
 
         try {
-            const payload = getTokenPayload();
-            const userId = payload?.id || payload?.userId;
+            const userId = getUserId();
+
+            if (!userId) {
+            setError("Session expired. Please login again.");
+            navigate("/login");
+            return;
+}
 
             // Step 1 — Place order
             const orderRes = await api.post("/api/orders", {
-                userId: userId,
-                productId: product.id,
+                userId: Number(userId),
+                productId: Number(product.id),
                 quantity: Number(quantity),
-                deliveryAddress: `${address.street}, ${address.city}, ${address.state} - ${address.pincode}`
             });
 
-            const orderId = orderRes.data?.id || orderRes.data;
+            console.log("Order response:", orderRes.data);
+            const orderId = orderRes.data?.id;
+
+            if(!orderId){
+                setError("Order Placement faild. Please try again.")
+                return;
+            }
 
             // Step 2 — Make payment
-            await api.post("/api/payments", {
-                orderId: orderId,
-                amount: totalAmount,
+            const paymentRes = await api.post("/api/payments", {
+                orderId: Number(orderId),
+                amount: totalAmount.toString(),
                 paymentMethod: paymentMethod
             });
+
+            console.log("Payment response:", paymentRes.data);
 
             // Clear sessionStorage
             sessionStorage.removeItem("buyProduct");
@@ -61,12 +91,24 @@ function Payment() {
             });
 
         } catch (err) {
-            console.log("Payment error:", err.response?.data);
-            setError("Payment failed: " + (err.response?.data || "Please try again"));
-        } finally {
-            setLoading(false);
+        console.log("Full error object:", err);
+        console.log("Error response:", err?.response);
+        console.log("Error message:", err?.message);
+        console.log("Error data:", err?.response?.data);
+        console.log("Error status:", err?.response?.status);
+
+        if (!err?.response) {
+            setError("Network error - server may be down. Please try again.");
+        } else {
+            const errMsg = typeof err.response?.data === "string"
+                ? err.response.data
+                : JSON.stringify(err.response?.data);
+            setError("Payment failed: " + errMsg);
         }
-    };
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div style={{ minHeight: "100vh", background: "#f1f3f6", padding: 24 }}>

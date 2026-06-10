@@ -29,7 +29,7 @@ public class OrderService {
 	}
 	
 	@CircuitBreaker(name = "productServiceCB", fallbackMethod = "productServiceFallback")
-	public String placeOrder(OrderRequest request) {
+	public Order placeOrder(OrderRequest request) {
 
 	    Order order = new Order();
 
@@ -43,12 +43,12 @@ public class OrderService {
 	    );
 
 	    if (productResponse == null) {
-	        return "Product not found";
+	        throw new RuntimeException ("Product not found");
 	    }
 
 	    if (productResponse.getStockQuantity() < request.getQuantity()) {
-	        return "Insufficient stock. Available stock: " 
-	                + productResponse.getStockQuantity();
+	        throw new RuntimeException("Insufficient stock. Available: )" 
+	                + productResponse.getStockQuantity());
 	    }
 	    BigDecimal totalAmount = productResponse.getPrice().multiply(
 	            BigDecimal.valueOf(request.getQuantity())
@@ -66,9 +66,7 @@ public class OrderService {
 	            null
 	    );
 
-	    orderRepository.save(order);
-
-	    return "Order placed successfully";
+	    return orderRepository.save(order);
 	}
 	
 	public List<Order> getAllOrders() {
@@ -84,15 +82,12 @@ public class OrderService {
 
 	    Order order = orderRepository.findById(orderId)
 	            .orElseThrow(() -> new RuntimeException("Order not found"));
-
-	    order.setOrderStatus(status);
-
-	    orderRepository.save(order);
-
-	    return "Order status updated successfully";
+	    	order.setOrderStatus(status);
+	    	orderRepository.save(order);
+	    	return "Order status updated successfully";
 	}
 	
 	public String productServiceFallback(OrderRequest request, Exception ex) {
-	    return "Product Service is currently unavailable. Please try again later.";
+	    throw new RuntimeException ( "Product Service is currently unavailable. Please try again later.");
 	}
 }

@@ -8,6 +8,11 @@ export function getTokenPayload() {
     }
 }
 
+export function getUserId() {
+    const payload = getTokenPayload();
+    return payload?.userId || null;
+}
+
 export function getRole() {
     return getTokenPayload()?.role || null;
 }

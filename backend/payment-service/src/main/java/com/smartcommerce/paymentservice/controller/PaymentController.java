@@ -13,6 +13,8 @@ import com.smartcommerce.paymentservice.dto.PaymentRequest;
 import com.smartcommerce.paymentservice.entity.Payment;
 import com.smartcommerce.paymentservice.service.PaymentService;
 
+import com.smartcommerce.paymentservice.dto.RazorpayOrderRequest;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,6 +30,13 @@ public class PaymentController {
     @PostMapping
     public String createPayment(@Valid @RequestBody PaymentRequest request) {
         return paymentService.createPayment(request);
+    }
+    
+    @PostMapping("/create-order")
+    public String createRazorpayOrder(
+            @RequestBody RazorpayOrderRequest request) {
+
+        return paymentService.createRazorpayOrder(request);
     }
     
     @GetMapping

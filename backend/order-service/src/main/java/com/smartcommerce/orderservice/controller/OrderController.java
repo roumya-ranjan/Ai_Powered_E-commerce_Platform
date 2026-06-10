@@ -2,6 +2,7 @@ package com.smartcommerce.orderservice.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,13 +30,25 @@ public class OrderController {
     }
 
     @PostMapping
-    public String placeOrder(@Valid @RequestBody OrderRequest request) {
-        return orderService.placeOrder(request);
+    public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderRequest request) {
+        try {
+            Order order = orderService.placeOrder(request);
+            return ResponseEntity.ok(order);  
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     
     @GetMapping
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
+    }
+    
+    @GetMapping("/user/{userId}")
+    public List<Order> getOrdersByUser(@PathVariable Long userId) {
+        return orderService.getAllOrders().stream()
+                .filter(o -> o.getUserId().equals(userId))
+                .toList();
     }
     
     @GetMapping("/{id}")

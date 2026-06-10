@@ -9,7 +9,7 @@ function AdminOrders() {
     const [loading, setLoading] = useState(true);
     const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("cart");
+    localStorage.removeItem("role");
     navigate("/login");
 };
 
@@ -46,7 +46,7 @@ function AdminOrders() {
                     </span>
                     <span style={{ color: "#fff", fontWeight: 600, fontSize: 18 }}>Manage Orders</span>
                 </div>
-                <button onClick={handlelogout} style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                <button onClick={handleLogout} style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
                     Logout
                 </button>
             </div>

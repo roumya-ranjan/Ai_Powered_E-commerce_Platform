@@ -8,7 +8,7 @@ function AdminDashboard() {
     const [stats, setStats] = useState({ products: 0, orders: 0, payments: 0, users: 0 });
     const handleLogout = () =>{
          localStorage.removeItem("token");
-         localStorage.removeItem("cart");
+         localStorage.removeItem("role");
          navigate("/login");
     };
 
@@ -50,7 +50,7 @@ function AdminDashboard() {
                         View Store
                     </button>
                     <button
-                        onClick={handlelogout}
+                        onClick={handleLogout}
                         style={{ background: "#fff", border: "none", color: "#2874f0", padding: "4px 16px", borderRadius: 2, cursor: "pointer", fontWeight: 600, fontSize: 13 }}
                     >
                         Logout
