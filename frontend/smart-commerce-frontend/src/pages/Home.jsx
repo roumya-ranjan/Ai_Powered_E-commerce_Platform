@@ -270,15 +270,14 @@ function Home() {
                                         marginBottom: 10
                                     }}>
                                         <img
-                                            src={product.imageUrl || `https://placehold.co/120x120?text=${encodeURIComponent(product.name)}`}
+                                            src={product.imageUrl && product.imageUrl.startsWith("http")
+                                                ? product.imageUrl
+                                                : `https://placehold.co/120x120?text=${encodeURIComponent(product.name)}`
+                                            }
                                             alt={product.name}
+                                            style={{ maxHeight: 120, maxWidth: "100%", objectFit: "contain" }}
                                             onError={(e) => {
                                                 e.target.src = `https://placehold.co/120x120?text=${encodeURIComponent(product.name)}`;
-                                            }}
-                                            style={{
-                                                maxHeight: 120,
-                                                maxWidth: "100%",
-                                                objectFit: "contain"
                                             }}
                                         />
                                     </div>

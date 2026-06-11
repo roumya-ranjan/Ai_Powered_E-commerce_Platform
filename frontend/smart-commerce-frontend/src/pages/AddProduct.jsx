@@ -13,20 +13,37 @@ function AddProduct() {
     });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [imageMode, setImageMode] = useState("url"); // "url" or "upload"
+    const [previewUrl, setPreviewUrl] = useState("");
 
-    // Block non-admins
     if (!isAdmin()) {
         return (
             <div style={{ padding: 40, textAlign: "center" }}>
                 <h4>Access Denied</h4>
-                <p style={{ color: "#878787" }}>Only admins can add products.</p>
                 <button onClick={() => navigate("/")} className="btn btn-primary btn-sm">Go Home</button>
             </div>
         );
     }
 
     const handleChange = (e) => {
-        setProduct({ ...product, [e.target.name]: e.target.value });
+        const updated = { ...product, [e.target.name]: e.target.value };
+        setProduct(updated);
+        if (e.target.name === "imageUrl") {
+            setPreviewUrl(e.target.value);
+        }
+    };
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Convert to base64 for preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+            setProduct(prev => ({ ...prev, imageUrl: reader.result }));
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = (e) => {
@@ -52,8 +69,8 @@ function AddProduct() {
 
     const inputStyle = {
         width: "100%", padding: "10px 12px", border: "1px solid #e0e0e0",
-        borderRadius: 2, fontSize: 14, outline: "none", boxSizing: "border-box",
-        marginBottom: 16
+        borderRadius: 2, fontSize: 14, outline: "none",
+        boxSizing: "border-box", marginBottom: 16
     };
 
     return (
@@ -61,12 +78,7 @@ function AddProduct() {
             <div style={{ background: "#fff", padding: 32, borderRadius: 4, width: "100%", maxWidth: 500, border: "0.5px solid #e0e0e0" }}>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-                    <span
-                        onClick={() => navigate("/admin/products")}
-                        style={{ color: "#2874f0", cursor: "pointer", fontSize: 13 }}
-                    >
-                        ← Back
-                    </span>
+                    <span onClick={() => navigate("/admin/products")} style={{ color: "#2874f0", cursor: "pointer", fontSize: 13 }}>← Back</span>
                     <h4 style={{ margin: 0, fontWeight: 600 }}>Add New Product</h4>
                 </div>
 
@@ -78,75 +90,89 @@ function AddProduct() {
 
                 <form onSubmit={handleSubmit}>
                     <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Product Name *</label>
-                    <input
-                        name="name" value={product.name} onChange={handleChange}
-                        required placeholder="e.g. Samsung Galaxy S24"
-                        style={inputStyle}
-                    />
+                    <input name="name" value={product.name} onChange={handleChange} required placeholder="e.g. Samsung Galaxy S24" style={inputStyle} />
 
                     <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Description</label>
-                    <textarea
-                        name="description" value={product.description} onChange={handleChange}
-                        placeholder="Product description..."
-                        rows={3}
-                        style={{ ...inputStyle, resize: "vertical" }}
-                    />
+                    <textarea name="description" value={product.description} onChange={handleChange} placeholder="Product description..." rows={3} style={{ ...inputStyle, resize: "vertical" }} />
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         <div>
                             <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Price (₹) *</label>
-                            <input
-                                name="price" value={product.price} onChange={handleChange}
-                                required type="number" min="1" placeholder="e.g. 999"
-                                style={inputStyle}
-                            />
+                            <input name="price" value={product.price} onChange={handleChange} required type="number" min="1" placeholder="e.g. 999" style={inputStyle} />
                         </div>
                         <div>
                             <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Stock Quantity *</label>
-                            <input
-                                name="stockQuantity" value={product.stockQuantity} onChange={handleChange}
-                                required type="number" min="0" placeholder="e.g. 50"
-                                style={inputStyle}
-                            />
+                            <input name="stockQuantity" value={product.stockQuantity} onChange={handleChange} required type="number" min="0" placeholder="e.g. 50" style={inputStyle} />
                         </div>
                     </div>
 
                     <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Category *</label>
-                    <select
-                        name="category" value={product.category} onChange={handleChange}
-                        required
-                        style={{ ...inputStyle, background: "#fff" }}
-                    >
+                    <select name="category" value={product.category} onChange={handleChange} required style={{ ...inputStyle, background: "#fff" }}>
                         <option value="">Select category</option>
-                        {CATEGORIES.map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                        ))}
+                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
 
-                    <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 6 }}>Image URL</label>
-                    <input
-                        name="imageUrl" value={product.imageUrl} onChange={handleChange}
-                        placeholder="https://example.com/image.jpg"
-                        style={inputStyle}
-                    />
+                    {/* Image section */}
+                    <label style={{ fontSize: 12, color: "#878787", display: "block", marginBottom: 8 }}>Product Image</label>
 
-                    {/* Image preview */}
-                    {product.imageUrl && (
-                        <div style={{ marginBottom: 16, textAlign: "center" }}>
-                            <img
-                                src={product.imageUrl}
-                                alt="Preview"
-                                style={{ maxHeight: 120, maxWidth: "100%", objectFit: "contain", border: "1px solid #e0e0e0", borderRadius: 4, padding: 8 }}
-                                onError={(e) => e.target.style.display = "none"}
+                    {/* Toggle URL / Upload */}
+                    <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                        <button type="button"
+                            onClick={() => setImageMode("url")}
+                            style={{ flex: 1, padding: "8px 0", borderRadius: 2, border: "1px solid #2874f0", background: imageMode === "url" ? "#2874f0" : "#fff", color: imageMode === "url" ? "#fff" : "#2874f0", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>
+                            Paste URL
+                        </button>
+                        <button type="button"
+                            onClick={() => setImageMode("upload")}
+                            style={{ flex: 1, padding: "8px 0", borderRadius: 2, border: "1px solid #2874f0", background: imageMode === "upload" ? "#2874f0" : "#fff", color: imageMode === "upload" ? "#fff" : "#2874f0", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>
+                            Upload Image
+                        </button>
+                    </div>
+
+                    {imageMode === "url" ? (
+                        <input
+                            name="imageUrl"
+                            value={product.imageUrl}
+                            onChange={handleChange}
+                            placeholder="https://example.com/image.jpg"
+                            style={inputStyle}
+                        />
+                    ) : (
+                        <div style={{ marginBottom: 16 }}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                style={{ width: "100%", padding: "8px 0", fontSize: 14 }}
                             />
                         </div>
                     )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        style={{ width: "100%", background: loading ? "#aaa" : "#2874f0", color: "#fff", border: "none", padding: "12px 0", borderRadius: 2, fontSize: 15, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
-                    >
+                    {/* Image preview */}
+                    {previewUrl && (
+                        <div style={{ marginBottom: 16, textAlign: "center", padding: 12, border: "1px solid #e0e0e0", borderRadius: 4 }}>
+                            <img
+                                src={previewUrl}
+                                alt="Preview"
+                                style={{ maxHeight: 150, maxWidth: "100%", objectFit: "contain" }}
+                                onError={(e) => {
+                                    e.target.style.display = "none";
+                                    setError("Invalid image URL");
+                                }}
+                            />
+                            <div style={{ fontSize: 12, color: "#388e3c", marginTop: 8 }}>✅ Image preview</div>
+                        </div>
+                    )}
+
+                    {/* No image placeholder */}
+                    {!previewUrl && (
+                        <div style={{ marginBottom: 16, textAlign: "center", padding: 24, border: "2px dashed #e0e0e0", borderRadius: 4, color: "#878787", fontSize: 13 }}>
+                            📷 No image selected — placeholder will be shown
+                        </div>
+                    )}
+
+                    <button type="submit" disabled={loading}
+                        style={{ width: "100%", background: loading ? "#aaa" : "#2874f0", color: "#fff", border: "none", padding: "12px 0", borderRadius: 2, fontSize: 15, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}>
                         {loading ? "Adding..." : "Add Product"}
                     </button>
                 </form>
