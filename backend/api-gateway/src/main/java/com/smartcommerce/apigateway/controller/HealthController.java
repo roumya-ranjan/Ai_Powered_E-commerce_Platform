@@ -1,0 +1,16 @@
+package com.smartcommerce.apigateway.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HealthController {
+
+	@GetMapping("/helath")
+	public String health() {
+		return "API Gateway Running";
+	}
+
+	
+	
+}
