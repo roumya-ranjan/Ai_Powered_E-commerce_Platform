@@ -28,6 +28,11 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+    
+    @GetMapping("/health")
+    public String health() {
+        return "Order Service Running";
+    }
 
     @PostMapping
     public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderRequest request) {

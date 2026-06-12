@@ -26,6 +26,11 @@ public class PaymentController {
 	public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
+	
+	@GetMapping("/health")
+	public String health() {
+	    return "Payment Service Running";
+	}
 
     @PostMapping
     public String createPayment(@Valid @RequestBody PaymentRequest request) {

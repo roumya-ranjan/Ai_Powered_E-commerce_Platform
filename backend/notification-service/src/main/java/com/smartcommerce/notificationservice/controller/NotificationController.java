@@ -20,6 +20,11 @@ public class NotificationController {
 		this.notificationRepository = notificationRepository;
 	}
 	
+	@GetMapping("/health")
+	public String health() {
+	    return "Notification Service Running";
+	}
+	
 	@GetMapping
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();

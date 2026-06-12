@@ -27,6 +27,12 @@ public class ProductController {
 	public ProductController(ProductService productService) {
 		this.productService = productService;
 	}
+	
+	@GetMapping("/health")
+	public String health() {
+	    return "Product Service Running";
+	}
+	
 	@PostMapping
 	public String addProduct(@Valid @RequestBody ProductRequest request) {
 		return productService.addProduct(request);

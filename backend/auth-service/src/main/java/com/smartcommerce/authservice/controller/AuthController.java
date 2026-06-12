@@ -24,6 +24,11 @@ public class AuthController {
 	        this.authService = authService;
 	    }
 	  
+	   @GetMapping("/health")
+	    public String health() {
+	        return "Auth Service Running";
+	    }
+	  
 	  @GetMapping("/profile")
 	  public String profile() {
 	      return "This is a protected profile API";
