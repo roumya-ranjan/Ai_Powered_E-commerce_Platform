@@ -257,21 +257,14 @@ AI-Powered-Ecommerce-Platform
 # 📸 Application Screenshots
 
 ## Home Page
-
-(Add Screenshot)
+<img width="1366" height="608" alt="Homepage" src="https://github.com/user-attachments/assets/8ec4da44-368f-4968-b015-bfcd6f60cfcb" />
 
 ## Login
-
-(Add Screenshot)
+<img width="1366" height="608" alt="Login" src="https://github.com/user-attachments/assets/f16734d9-d507-4127-9132-d1dc092e3c0e" />
 
 ## Admin Product Management
 
-(Add Screenshot)
-
 ## Order Management
-
-(Add Screenshot)
-
 ---
 
 # 👨‍💻 Developer
