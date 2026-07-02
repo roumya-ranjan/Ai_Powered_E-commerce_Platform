@@ -1,4 +1,4 @@
-# 🛒 AI-Powered E-Commerce Platform
+# 🛒 Smart E-Commerce Platform
 
 A cloud-deployed enterprise-grade E-Commerce platform built using **Java Spring Boot Microservices** and **React.js**, designed to demonstrate modern backend architecture, secure authentication, distributed systems, and cloud deployment.
 
